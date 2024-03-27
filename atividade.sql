@@ -1,6 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS opt120; 
-CREATE DATABASE IF NOT EXISTS opt120;
-
 CREATE TABLE IF NOT EXISTS usuarios (
 	id INTEGER auto_increment,
     nome VARCHAR(100),
@@ -20,8 +17,8 @@ CREATE TABLE IF NOT EXISTS atividades (
 CREATE TABLE IF NOT EXISTS usuario_atividade (
 	usuario_id INTEGER,
     atividade_id INTEGER,
-    entrega date,
-    nota DOUBLE,
+    entrega date default null,
+    nota DOUBLE default null,
     primary key (usuario_id, atividade_id),
     foreign key (usuario_id) references usuarios (id),
     foreign key (atividade_id) references atividades (id)

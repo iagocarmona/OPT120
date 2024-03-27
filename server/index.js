@@ -16,8 +16,8 @@ app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
 
-app.use("/users", usersRouter);
-app.use("/activities", activitiesRouter);
+app.use("/usuarios", usersRouter);
+app.use("/atividades", activitiesRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

@@ -1,5 +1,5 @@
-const db = require("../db");
-const helper = require("../../helper");
+const db = require("../configs/db");
+const helper = require("../helper");
 
 async function create(title, description, date) {
   if (title && description) {

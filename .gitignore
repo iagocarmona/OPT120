@@ -1,0 +1,4 @@
+server/mysql_dev
+server/mysql.env
+server/node_modules
+server/package-lock.json
