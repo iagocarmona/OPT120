@@ -54,6 +54,7 @@ class ActivityItemListView extends StatelessWidget {
 
           return ListTile(
               title: Text(item.title),
+              subtitle: Text(item.description),
               leading: const CircleAvatar(
                 // Display the Flutter Logo image asset.
                 foregroundImage: AssetImage('assets/images/flutter_logo.png'),
