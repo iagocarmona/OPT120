@@ -4,6 +4,7 @@ const port = 3000;
 
 const usersRouter = require("./routes/users");
 const activitiesRouter = require("./routes/activities");
+const userActivityRouter = require("./routes/user-activity");
 
 app.use(express.json());
 app.use(
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/usuarios", usersRouter);
 app.use("/atividades", activitiesRouter);
+app.use("/usuario-atividade", userActivityRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
