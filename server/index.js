@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
@@ -6,6 +7,11 @@ const usersRouter = require("./routes/users");
 const activitiesRouter = require("./routes/activities");
 const userActivityRouter = require("./routes/user-activity");
 
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 app.use(
   express.urlencoded({
