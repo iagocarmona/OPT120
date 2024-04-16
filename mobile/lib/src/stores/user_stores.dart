@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:mobile/src/controllers/users_controller.dart';
+import 'package:flutter/foundation.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:mobile/src/controllers/user_controller.dart';
 import 'package:mobile/src/models/user_model.dart';
 
 class UserStore {
@@ -17,7 +18,82 @@ class UserStore {
   getUsers() async {
     isLoading.value = true;
 
-    final result = await controller.getUsers();
-    state.value = result;
+    try {
+      final result = await controller.getUsers();
+      state.value = result;
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> createUser(UserModel user) async {
+    isLoading.value = true;
+
+    try {
+      await controller.createUser(user);
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> login(UserModel user) async {
+    isLoading.value = true;
+
+    try {
+      final token = await controller.login(user);
+      localStorage.setItem("token", token);
+
+      if (kDebugMode) {
+        print('TOKEN: $token');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    isLoading.value = true;
+
+    try {
+      await controller.updateUser(user);
+      await getUsers();
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> deleteUser(int id) async {
+    isLoading.value = true;
+
+    try {
+      await controller.deleteUser(id);
+      await getUsers();
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
   }
 }

@@ -15,7 +15,7 @@ router.get("/", async function (req, res, next) {
 });
 
 router.post("/", async function (req, res, next) {
-  const { titulo: title, descricao: description, data: date } = req.body.data;
+  const { titulo: title, descricao: description, data: date } = req.body;
 
   try {
     const created = await service.create(title, description, date);
@@ -29,12 +29,7 @@ router.post("/", async function (req, res, next) {
 });
 
 router.put("/", async function (req, res, next) {
-  const {
-    id,
-    titulo: title,
-    descricao: description,
-    data: date,
-  } = req.body.data;
+  const { id, titulo: title, descricao: description, data: date } = req.body;
 
   if (!id || id < 0 || typeof id !== "number")
     return res.status(400).send({ message: "Invalid id" });

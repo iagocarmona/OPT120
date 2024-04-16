@@ -1,11 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:mobile/src/activities/activity_item_list_view.dart';
+import 'package:mobile/src/login.dart';
 
-import 'activities/activity_item_list_view.dart';
-import 'users/user_item_list_view.dart';
-
-/// The Widget that configures your application.
 class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
@@ -16,53 +17,67 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _currentIndex = 0;
+  late Timer _timer;
 
-  final tabs = [const ActivityItemListView(), const UserItemListView()];
+  @override
+  void initState() {
+    super.initState();
+    _startTokenCheckTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTokenCheckTimer() {
+    const checkInterval = Duration(seconds: 10);
+    _timer = Timer.periodic(checkInterval, (_) {
+      _checkToken();
+    });
+  }
+
+  Future<bool> _checkToken() async {
+    final token = localStorage.getItem('token');
+    return token != null;
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      restorationScopeId: 'app',
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en', ''),
-      ],
-      onGenerateTitle: (BuildContext context) =>
-          AppLocalizations.of(context)!.appTitle,
-      theme: ThemeData(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        body: tabs[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 14,
-          selectedItemColor: Colors.deepOrange,
-          unselectedFontSize: 10,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.note),
-              label: "Atividades",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: "Usuários",
-            )
-          ],
-          onTap: (index) => {
-            setState(() {
-              _currentIndex = index;
-            })
+        restorationScopeId: 'app',
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''),
+        ],
+        onGenerateTitle: (BuildContext context) =>
+            AppLocalizations.of(context)!.appTitle,
+        theme: ThemeData(),
+        darkTheme: ThemeData.dark(),
+        home: FutureBuilder(
+          future: _checkToken(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else {
+              if (snapshot.hasData && snapshot.data!) {
+                return const ActivityItemListView();
+              } else {
+                return const LoginPage();
+              }
+            }
           },
-        ),
-      ),
-    );
+        ));
   }
 }

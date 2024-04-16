@@ -3,7 +3,7 @@ const router = express.Router();
 const service = require("../services/user-activity");
 
 router.post("/vincular-atividade", async function (req, res, next) {
-  const { atividadeId: activityId, usuarioId: userId } = req.body.data;
+  const { atividadeId: activityId, usuarioId: userId } = req.body;
 
   try {
     const linked = await service.linkActivity(activityId, userId);
@@ -17,7 +17,7 @@ router.post("/vincular-atividade", async function (req, res, next) {
 });
 
 router.delete("/desvincular-atividade", async function (req, res, next) {
-  const { atividadeId: activityId, usuarioId: userId } = req.body.data;
+  const { atividadeId: activityId, usuarioId: userId } = req.body;
 
   if (!activityId && !userId)
     return res.status(400).send({ message: "Invalid ids" });
@@ -35,11 +35,7 @@ router.delete("/desvincular-atividade", async function (req, res, next) {
 });
 
 router.put("/atribuir-nota", async function (req, res, next) {
-  const {
-    atividadeId: acitivityId,
-    usuarioId: userId,
-    nota: grade,
-  } = req.body.data;
+  const { atividadeId: acitivityId, usuarioId: userId, nota: grade } = req.body;
 
   if (!acitivityId && !userId && !grade)
     return res.status(400).send({ message: "Invalid data" });

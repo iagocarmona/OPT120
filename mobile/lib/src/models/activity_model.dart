@@ -6,23 +6,27 @@ ActivityModel activityFromJson(String str) =>
 String activityToJson(ActivityModel data) => json.encode(data.toJson());
 
 class ActivityModel {
+  int? id;
   String title;
   String description;
   DateTime date;
 
   ActivityModel({
+    this.id,
     required this.title,
     required this.description,
     required this.date,
   });
 
   factory ActivityModel.fromJson(Map<String, dynamic> json) => ActivityModel(
-        title: json["title"],
-        description: json["description"],
-        date: DateTime.parse(json["date"]),
+        id: json["id"],
+        title: json["titulo"],
+        description: json["descricao"],
+        date: DateTime.parse(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "title": title,
         "description": description,
         "date":

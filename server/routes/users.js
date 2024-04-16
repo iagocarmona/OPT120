@@ -4,7 +4,10 @@ const service = require("../services/users");
 
 router.get("/", async function (req, res, next) {
   try {
-    res.json(await service.list());
+    res.status(200).send({
+      message: "Successfully listed users",
+      data: await service.list(),
+    });
   } catch (err) {
     console.error(`Error while getting users `, err.message);
     next(err);
@@ -12,7 +15,7 @@ router.get("/", async function (req, res, next) {
 });
 
 router.post("/", async function (req, res, next) {
-  const { nome: name, email, senha: password } = req.body.data;
+  const { nome: name, email, senha: password } = req.body;
 
   try {
     const created = await service.create(name, email, password);
@@ -25,8 +28,22 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+router.post("/login", async function (req, res, next) {
+  const { email, senha: password } = req.body;
+
+  try {
+    const token = await service.login(email, password);
+
+    if (token)
+      res.status(201).send({ message: "Successfully login", data: token });
+  } catch (err) {
+    console.error(`Error while creating user `, err.message);
+    next(err);
+  }
+});
+
 router.put("/", async function (req, res, next) {
-  const { id, nome: name, email } = req.body.data;
+  const { id, nome: name, email } = req.body;
 
   if (!id || id < 0 || typeof id !== "number")
     return res.status(400).send({ message: "Invalid id" });

@@ -1,9 +1,39 @@
 const db = require("../configs/db");
 const helper = require("../helper");
+const jwt = require("jsonwebtoken");
+
+async function login(email, password) {
+  try {
+    const user = await getUserByEmail(email);
+    if (!user) throw new Error("User not found");
+
+    const isPasswordMatch = await helper.comparePasswords(password, user.senha);
+    if (!isPasswordMatch) throw new Error("Incorrect password");
+    const secret = "secret";
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      secret,
+      { expiresIn: "1h" }
+    );
+
+    return token;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
 
 async function create(name, email, password) {
   if (name && email && password) {
     try {
+      const existingUser = await getUserByEmail(email);
+      if (existingUser) {
+        throw new Error("Email already exists");
+      }
+
       const encriptedPassword = await helper.encryptPassword(password);
 
       const result = await db.query(
@@ -18,7 +48,7 @@ async function create(name, email, password) {
 
       return created[0];
     } catch (error) {
-      throw new Error("Error while creating User");
+      throw new Error(error);
     }
   } else {
     throw new Error(error);
@@ -90,6 +120,18 @@ async function getOneById(id) {
   }
 }
 
+async function getUserByEmail(email) {
+  try {
+    const result = await db.query(`SELECT * FROM usuarios WHERE email = ?`, [
+      email,
+    ]);
+
+    return result[0];
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 async function list() {
   const rows = await db.query(`SELECT * FROM usuarios`);
   return helper.emptyOrRows(rows);
@@ -101,4 +143,5 @@ module.exports = {
   update,
   deleteById,
   getOneById,
+  login,
 };

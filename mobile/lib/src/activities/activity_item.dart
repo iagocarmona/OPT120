@@ -1,12 +1,12 @@
 class ActivityItem {
-  const ActivityItem(
+  const ActivityItem({
     this.id,
-    this.title,
-    this.description,
-    this.date,
-  );
+    required this.title,
+    required this.description,
+    required this.date,
+  });
 
-  final int id;
+  final int? id;
   final String title;
   final String description;
   final String date;
