@@ -24,7 +24,6 @@ class _ActivityFormState extends State<ActivityForm> {
   late TextEditingController dateController;
   late TextEditingController titleController;
   late TextEditingController descriptionController;
-  late DateTime selectedDate;
 
   @override
   void initState() {
@@ -38,9 +37,9 @@ class _ActivityFormState extends State<ActivityForm> {
 
   @override
   void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
     dateController.dispose();
+    descriptionController.dispose();
+    titleController.dispose();
 
     super.dispose();
   }
