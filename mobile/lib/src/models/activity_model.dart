@@ -9,7 +9,7 @@ class ActivityModel {
   int? id;
   String title;
   String description;
-  DateTime date;
+  String date;
 
   ActivityModel({
     this.id,
@@ -22,14 +22,20 @@ class ActivityModel {
         id: json["id"],
         title: json["titulo"],
         description: json["descricao"],
-        date: DateTime.parse(json["data"]),
+        date: json["data"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      "titulo": title,
+      "descricao": description,
+      "data": date,
+    };
+
+    if (id != null) {
+      data["id"] = id;
+    }
+
+    return data;
+  }
 }

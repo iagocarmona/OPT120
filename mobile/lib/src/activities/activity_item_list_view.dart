@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:mobile/src/activities/activity_details_view.dart';
 import 'package:mobile/src/activities/activity_form.dart';
 import 'package:mobile/src/controllers/activity_controller.dart';
+import 'package:mobile/src/login.dart';
+import 'package:mobile/src/models/user_model.dart';
 import 'package:mobile/src/services/http_client.dart';
 import 'package:mobile/src/stores/activity_stores.dart';
 
@@ -23,19 +26,78 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
   );
 
   var isLoaded = false;
+  UserModel? loggedUserModel;
+  final loggedUser = localStorage.getItem('token');
 
   @override
   void initState() {
     super.initState();
 
+    if (loggedUser != null) {
+      final Map<String, dynamic> decodedToken = JwtDecoder.decode(loggedUser!);
+
+      loggedUserModel = UserModel(
+        id: decodedToken['id'],
+        name: decodedToken['name'],
+        email: decodedToken['email'],
+      );
+    }
+
     store.getActivities();
+  }
+
+  Future<bool> _checkToken() async {
+    final token = localStorage.getItem('token');
+    return token != null;
+  }
+
+  void _logout() {
+    localStorage.clear();
+    _checkToken().then((loggedIn) {
+      if (!loggedIn) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Atividades'),
+        title: RichText(
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text: 'Olá ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white54,
+                  fontSize: 22,
+                ),
+              ),
+              TextSpan(
+                text: loggedUserModel?.name ?? "Atividades",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white70,
+                  fontSize: 22,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: _logout,
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.deepOrange,
+            ),
+          )
+        ],
       ),
       body: AnimatedBuilder(
         animation:
@@ -88,7 +150,7 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
                                       ),
                                     ),
                                     Text(
-                                      item.description,
+                                      'Prazo: ${item.date}',
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
@@ -107,7 +169,10 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await store.deleteActivity(item.id!);
+                                  setState(() {});
+                                },
                                 icon: const Icon(
                                   Icons.delete,
                                   color: Colors.white30,
@@ -138,7 +203,10 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
           );
         },
         backgroundColor: Colors.deepOrange.shade800,
-        child: const Icon(Icons.assignment_add),
+        child: const Icon(
+          Icons.assignment_add,
+          color: Colors.white70,
+        ),
       ),
     );
   }

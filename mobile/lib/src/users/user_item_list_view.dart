@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mobile/src/controllers/user_controller.dart';
 import 'package:mobile/src/login.dart';
+import 'package:mobile/src/models/user_model.dart';
 import 'package:mobile/src/services/http_client.dart';
 import 'package:mobile/src/stores/user_stores.dart';
 import 'package:mobile/src/users/user_details_view.dart';
@@ -23,10 +25,22 @@ class _UserItemListViewState extends State<UserItemListView> {
   );
 
   var isLoaded = false;
+  UserModel? loggedUserModel;
+  final loggedUser = localStorage.getItem('token');
 
   @override
   void initState() {
     super.initState();
+
+    if (loggedUser != null) {
+      final Map<String, dynamic> decodedToken = JwtDecoder.decode(loggedUser!);
+
+      loggedUserModel = UserModel(
+        id: decodedToken['id'],
+        name: decodedToken['name'],
+        email: decodedToken['email'],
+      );
+    }
 
     store.getUsers();
   }
@@ -38,6 +52,7 @@ class _UserItemListViewState extends State<UserItemListView> {
 
   void _logout() {
     localStorage.clear();
+    loggedUserModel = null;
     _checkToken().then((loggedIn) {
       if (!loggedIn) {
         Navigator.pushReplacement(
@@ -52,7 +67,28 @@ class _UserItemListViewState extends State<UserItemListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usuários'),
+        title: RichText(
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text: 'Olá ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white54,
+                  fontSize: 22,
+                ),
+              ),
+              TextSpan(
+                text: loggedUserModel?.name ?? "Atividades",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white70,
+                  fontSize: 22,
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: _logout,
@@ -74,6 +110,7 @@ class _UserItemListViewState extends State<UserItemListView> {
           return ListView.separated(
             itemBuilder: (_, index) {
               final item = store.state.value[index];
+              final isMyUser = item.id == loggedUserModel?.id;
 
               return Column(
                 children: [
@@ -132,13 +169,17 @@ class _UserItemListViewState extends State<UserItemListView> {
                                   color: Colors.white30,
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white30,
+                              if (!isMyUser)
+                                IconButton(
+                                  onPressed: () async {
+                                    await store.deleteUser(item.id!);
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white30,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),

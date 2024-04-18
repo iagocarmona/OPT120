@@ -26,6 +26,7 @@ class _HomeState extends State<Home> {
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 16,
         selectedItemColor: Colors.deepOrange.shade800,
+        unselectedItemColor: Colors.white54,
         unselectedFontSize: 12,
         items: const [
           BottomNavigationBarItem(

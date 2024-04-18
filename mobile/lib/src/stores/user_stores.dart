@@ -15,7 +15,7 @@ class UserStore {
 
   UserStore({required this.controller});
 
-  getUsers() async {
+  Future<void> getUsers() async {
     isLoading.value = true;
 
     try {
@@ -83,7 +83,6 @@ class UserStore {
 
   Future<void> deleteUser(int id) async {
     isLoading.value = true;
-
     try {
       await controller.deleteUser(id);
       await getUsers();

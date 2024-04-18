@@ -39,7 +39,7 @@ class ActivityController implements IActivityController {
   Future<void> createActivity(ActivityModel activity) async {
     final Map<String, dynamic> data = activity.toJson();
 
-    final response = await client.post(url: baseUrl, body: jsonEncode(data));
+    final response = await client.post(url: baseUrl, body: data);
 
     if (response.statusCode != 201) {
       throw Exception('Failed to create activity');
@@ -50,7 +50,7 @@ class ActivityController implements IActivityController {
   Future<void> updateActivity(ActivityModel activity) async {
     final Map<String, dynamic> data = activity.toJson();
 
-    final response = await client.put(url: baseUrl, body: jsonEncode(data));
+    final response = await client.put(url: baseUrl, body: data);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update activity');
@@ -61,7 +61,7 @@ class ActivityController implements IActivityController {
   Future<void> deleteActivity(int id) async {
     final response = await client.delete(url: baseUrl, id: id);
 
-    if (response.statusCode != 204) {
+    if (response.statusCode != 200) {
       throw Exception('Failed to delete activity');
     }
   }

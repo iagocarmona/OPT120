@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/src/activities/activity_item_list_view.dart';
+import 'package:mobile/src/controllers/activity_controller.dart';
+import 'package:mobile/src/models/activity_model.dart';
+import 'package:mobile/src/services/http_client.dart';
+import 'package:mobile/src/stores/activity_stores.dart';
 import 'package:mobile/src/widgets/text_field.dart';
 
 class ActivityForm extends StatefulWidget {
@@ -11,6 +14,12 @@ class ActivityForm extends StatefulWidget {
 }
 
 class _ActivityFormState extends State<ActivityForm> {
+  final ActivityStore store = ActivityStore(
+    controller: ActivityController(
+      client: HttpClient(),
+    ),
+  );
+
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   late TextEditingController dateController;
@@ -110,13 +119,34 @@ class _ActivityFormState extends State<ActivityForm> {
                 ),
                 const SizedBox(height: 60),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ActivityItemListView(),
-                      ),
+                  onPressed: () async {
+                    final title = titleController.text;
+                    final description = descriptionController.text;
+                    final date = dateController.text;
+
+                    if (title.isEmpty || description.isEmpty || date.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Por favor, preencha o formulário.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+
+                      return;
+                    }
+
+                    final newActivity = ActivityModel(
+                      title: title,
+                      description: description,
+                      date: date,
                     );
+
+                    await store.createActivity(newActivity);
+
+                    if (!store.isLoading.value) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.pop(context);
+                    }
                   },
                   style: const ButtonStyle(
                     fixedSize: MaterialStatePropertyAll(Size(200, 50)),

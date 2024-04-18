@@ -83,13 +83,13 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 60),
             CustomTextField(
               controller: emailController,
-              icon: Icons.email_outlined,
+              icon: Icons.person_outline,
               hint: "Email",
             ),
             const SizedBox(height: 32),
             CustomTextField(
               controller: passwordController,
-              icon: Icons.info_outline,
+              icon: Icons.lock_outline,
               hint: "Password",
               isPassword: true,
             ),

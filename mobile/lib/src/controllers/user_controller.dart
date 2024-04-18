@@ -80,7 +80,7 @@ class UserController implements IUserController {
   Future<void> deleteUser(int id) async {
     final response = await client.delete(url: baseUrl, id: id);
 
-    if (response.statusCode != 204) {
+    if (response.statusCode != 200) {
       throw Exception('Failed to delete user');
     }
   }

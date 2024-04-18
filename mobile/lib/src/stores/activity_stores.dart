@@ -14,7 +14,7 @@ class ActivityStore {
 
   ActivityStore({required this.controller});
 
-  getActivities() async {
+  Future<void> getActivities() async {
     isLoading.value = true;
 
     try {

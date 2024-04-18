@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:mobile/src/activities/activity_item_list_view.dart';
+import 'package:mobile/src/home.dart';
 import 'package:mobile/src/login.dart';
 
 class MyApp extends StatefulWidget {
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
               );
             } else {
               if (snapshot.hasData && snapshot.data!) {
-                return const ActivityItemListView();
+                return const Home();
               } else {
                 return const LoginPage();
               }
