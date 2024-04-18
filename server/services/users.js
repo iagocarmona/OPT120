@@ -15,9 +15,10 @@ async function login(email, password) {
       {
         id: user.id,
         email: user.email,
+        name: user.nome,
       },
       secret,
-      { expiresIn: "1h" }
+      { expiresIn: "1d" }
     );
 
     return token;

@@ -6,7 +6,7 @@ async function create(title, description, date) {
     try {
       const result = await db.query(
         `INSERT INTO atividades (titulo, descricao, data) VALUES (?, ?, ?)`,
-        [title, description, date ?? new Date()]
+        [title, description, date]
       );
 
       const insertedId = result.insertId;
