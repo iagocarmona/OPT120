@@ -20,9 +20,9 @@ class _ActivityFormState extends State<ActivityForm> {
     ),
   );
 
+  late TextEditingController dateController;
   late TextEditingController titleController;
   late TextEditingController descriptionController;
-  late TextEditingController dateController;
   late DateTime selectedDate;
 
   @override
