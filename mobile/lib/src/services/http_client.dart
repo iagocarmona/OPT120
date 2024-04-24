@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 
 abstract class IHttpClient {
-  Future get({required String url});
+  Future get({required String url, int? id});
   Future post({required String url, required dynamic body});
   Future put({required String url, required dynamic body});
   Future delete({required String url, required int id});
@@ -11,8 +11,14 @@ class HttpClient implements IHttpClient {
   final client = http.Client();
 
   @override
-  Future get({required String url}) async {
-    return await client.get(Uri.parse(url));
+  Future get({required String url, int? id}) async {
+    String newUrl = url;
+
+    if (id != null) {
+      newUrl = '$url/$id';
+    }
+
+    return await client.get(Uri.parse(newUrl));
   }
 
   @override

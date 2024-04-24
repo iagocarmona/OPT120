@@ -1,8 +1,9 @@
+const moment = require("moment");
 const db = require("../configs/db");
 const helper = require("../helper");
 
 async function create(title, description, date) {
-  if (title && description) {
+  if (title && description && date) {
     try {
       const result = await db.query(
         `INSERT INTO atividades (titulo, descricao, data) VALUES (?, ?, ?)`,
@@ -95,7 +96,7 @@ async function getOneById(id) {
 }
 
 async function list() {
-  const rows = await db.query(`SELECT * FROM atividades`);
+  const rows = await db.query(`SELECT * FROM atividades ORDER BY id DESC`);
   return helper.emptyOrRows(rows);
 }
 

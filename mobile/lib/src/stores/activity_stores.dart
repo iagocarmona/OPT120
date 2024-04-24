@@ -76,4 +76,21 @@ class ActivityStore {
 
     isLoading.value = false;
   }
+
+  Future<ActivityModel?> getActivityById(int id) async {
+    isLoading.value = true;
+
+    try {
+      return await controller.getActivityById(id);
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+
+    return null;
+  }
 }

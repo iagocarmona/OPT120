@@ -134,7 +134,7 @@ async function getUserByEmail(email) {
 }
 
 async function list() {
-  const rows = await db.query(`SELECT * FROM usuarios`);
+  const rows = await db.query(`SELECT * FROM usuarios ORDER BY id DESC`);
   return helper.emptyOrRows(rows);
 }
 

@@ -52,10 +52,24 @@ class _ActivityFormState extends State<ActivityForm> {
       lastDate: DateTime(2101),
     );
     if (pickedDate != null && pickedDate != selectedDate) {
-      setState(() {
-        selectedDate = pickedDate;
-        dateController.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-      });
+      final TimeOfDay? pickedTime = await showTimePicker(
+        // ignore: use_build_context_synchronously
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(selectedDate),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          dateController.text =
+              DateFormat('dd/MM/yyyy HH:mm').format(selectedDate);
+        });
+      }
     }
   }
 
@@ -145,7 +159,7 @@ class _ActivityFormState extends State<ActivityForm> {
 
                     if (!store.isLoading.value) {
                       // ignore: use_build_context_synchronously
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     }
                   },
                   style: const ButtonStyle(

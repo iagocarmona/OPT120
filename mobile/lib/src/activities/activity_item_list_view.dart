@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mobile/src/activities/activity_details_view.dart';
 import 'package:mobile/src/activities/activity_form.dart';
 import 'package:mobile/src/controllers/activity_controller.dart';
 import 'package:mobile/src/login.dart';
+import 'package:mobile/src/models/activity_model.dart';
 import 'package:mobile/src/models/user_model.dart';
 import 'package:mobile/src/services/http_client.dart';
 import 'package:mobile/src/stores/activity_stores.dart';
@@ -118,7 +120,8 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ActivityItemDetailsView(),
+                          builder: (context) =>
+                              ActivityItemDetailsView(id: item.id!),
                         ),
                       );
                     },
@@ -194,13 +197,17 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          bool willRefresh = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const ActivityForm(),
             ),
           );
+
+          if (willRefresh) {
+            store.getActivities();
+          }
         },
         backgroundColor: Colors.deepOrange.shade800,
         child: const Icon(

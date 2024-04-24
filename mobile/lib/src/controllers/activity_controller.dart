@@ -8,6 +8,7 @@ abstract class IActivityController {
   Future<void> createActivity(ActivityModel activity);
   Future<void> updateActivity(ActivityModel activity);
   Future<void> deleteActivity(int id);
+  Future<ActivityModel?> getActivityById(int id);
 }
 
 class ActivityController implements IActivityController {
@@ -64,5 +65,26 @@ class ActivityController implements IActivityController {
     if (response.statusCode != 200) {
       throw Exception('Failed to delete activity');
     }
+  }
+
+  @override
+  Future<ActivityModel?> getActivityById(int id) async {
+    final response = await client.get(url: baseUrl, id: id);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+
+      if (body.containsKey('data')) {
+        final item = body['data'];
+
+        final ActivityModel activity = ActivityModel.fromJson(item);
+
+        return activity;
+      }
+    } else {
+      return null;
+    }
+
+    return null;
   }
 }

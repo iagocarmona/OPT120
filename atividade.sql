@@ -24,19 +24,6 @@ CREATE TABLE IF NOT EXISTS usuario_atividade (
     foreign key (atividade_id) references atividades (id)
 );
 
-INSERT INTO usuarios (nome, email, senha) values ('iago', 'teste@gmail.com', '123123');
-INSERT INTO usuarios (nome, email, senha) values ('joao', 'joao@gmail.com', '123222');
-INSERT INTO usuarios (nome, email, senha) values ('pedro', 'pedro@gmail.com', '222222');
-INSERT INTO atividades (titulo, descricao, data) values ('tarefa 1', 'tarefa teste 1', '2023-03-25');
-INSERT INTO usuario_atividade (usuario_id, atividade_id, entrega, nota) values (1, 1, '2024-03-22', 10.00);
-
-SELECT * FROM usuarios u, usuario_atividade ua 
-WHERE u.id = ua.usuario_id 
-AND ua.nota > 5.00;
-
-SELECT * FROM atividades;
-select * from usuario_atividade;
-
 
 
 
