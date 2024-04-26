@@ -55,14 +55,15 @@ class UserController implements IUserController {
 
     final response = await client.post(url: loginUrl, body: data);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
 
       final token = responseData['data'];
 
       return token;
     } else {
-      throw Exception('Failed login: ${response.statusCode}');
+      final responseData = jsonDecode(response.body);
+      throw responseData['error']['message'];
     }
   }
 

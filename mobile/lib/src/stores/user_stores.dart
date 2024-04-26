@@ -51,10 +51,6 @@ class UserStore {
     try {
       final token = await controller.login(user);
       localStorage.setItem("token", token);
-
-      if (kDebugMode) {
-        print('TOKEN: $token');
-      }
     } catch (e) {
       if (kDebugMode) {
         print('error: $e');

@@ -1,75 +1,55 @@
 const db = require("../configs/db");
 
 async function linkActivity(activityId, userId) {
-  if (!activityId && !userId) return;
+  const result = await db.query(
+    `INSERT INTO usuario_atividade (atividade_id, usuario_id) VALUES (?, ?)`,
+    [activityId, userId]
+  );
 
-  try {
-    const result = await db.query(
-      `INSERT INTO usuario_atividade (atividade_id, usuario_id) VALUES (?, ?)`,
-      [activityId, userId]
-    );
+  const insertedId = result.insertId;
+  const created = await db.query(
+    `SELECT * FROM usuario_atividade WHERE id = ?`,
+    [insertedId]
+  );
 
-    const insertedId = result.insertId;
-    const created = await db.query(
-      `SELECT * FROM usuario_atividade WHERE id = ?`,
-      [insertedId]
-    );
-
-    return created[0];
-  } catch (error) {
-    throw new Error(error);
-  }
+  return created[0];
 }
 
 async function assignGrade(activityId, userId, grade) {
-  if (!activityId && !userId && !grade) return;
+  await db.query(
+    `UPDATE usuario_atividade SET nota = ? WHERE atividade_id = ? AND usuario_id = ?`,
+    [grade, activityId, userId]
+  );
 
-  try {
-    await db.query(
-      `UPDATE usuario_atividade SET nota = ? WHERE atividade_id = ? AND usuario_id = ?`,
-      [grade, activityId, userId]
-    );
+  const updatedActivity = await db.query(
+    `SELECT * FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
+    [activityId, userId]
+  );
 
-    const updatedActivity = await db.query(
-      `SELECT * FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
-      [activityId, userId]
-    );
-
-    if (updatedActivity.length > 0) {
-      return updatedActivity[0];
-    }
-  } catch (error) {
-    throw new Error(error);
+  if (updatedActivity.length > 0) {
+    return updatedActivity[0];
   }
 }
 
 async function getOneById(activityId, userId) {
-  try {
-    const result = await db.query(
-      `SELECT * FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
-      [activityId, userId]
-    );
+  const result = await db.query(
+    `SELECT * FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
+    [activityId, userId]
+  );
 
-    if (!result[0]) throw new Error("Activity not found");
+  if (!result[0]) throw new Error("Activity not found");
 
-    return result[0];
-  } catch (error) {
-    throw new Error(error);
-  }
+  return result[0];
 }
 
 async function unlinkActivity(activityId, userId) {
-  try {
-    const exists = await getOneById(activityId, userId);
-    if (!exists) throw new Error("Activity not found");
+  const exists = await getOneById(activityId, userId);
+  if (!exists) throw new Error("Activity not found");
 
-    return await db.query(
-      `DELETE FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
-      [activityId, userId]
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
+  return await db.query(
+    `DELETE FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
+    [activityId, userId]
+  );
 }
 
 async function getActivitiesByUserId(userId) {

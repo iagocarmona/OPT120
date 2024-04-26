@@ -32,10 +32,13 @@ router.post("/login", async function (req, res, next) {
   const { email, senha: password } = req.body;
 
   try {
-    const token = await service.login(email, password);
+    const returned = await service.login(email, password);
 
-    if (token)
-      res.status(201).send({ message: "Successfully login", data: token });
+    if (returned.error) {
+      res.status(returned.error.statusCode).send(returned);
+    } else {
+      res.status(200).send({ message: "Successfully login", data: returned });
+    }
   } catch (err) {
     console.error(`Error while creating user `, err.message);
     next(err);
