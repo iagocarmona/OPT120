@@ -7,6 +7,7 @@ import 'package:mobile/src/models/user_model.dart';
 import 'package:mobile/src/services/http_client.dart';
 import 'package:mobile/src/stores/user_stores.dart';
 import 'package:mobile/src/users/user_details_view.dart';
+import 'package:mobile/src/users/user_form.dart';
 
 class UserItemListView extends StatefulWidget {
   const UserItemListView({
@@ -50,7 +51,45 @@ class _UserItemListViewState extends State<UserItemListView> {
     return token != null;
   }
 
-  void _logout() {
+  void _logout({bool showConfirmationDialog = false, int? userId}) {
+    if (showConfirmationDialog) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:
+                const Text("Seus dados serão removidos, tem certeza disso ?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  "Sim",
+                  style: TextStyle(color: Colors.green),
+                ),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await store.deleteUser(userId!);
+                  _performLogout();
+                },
+              ),
+              TextButton(
+                child: const Text(
+                  "Não",
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _performLogout();
+    }
+  }
+
+  void _performLogout() {
     localStorage.clear();
     loggedUserModel = null;
     _checkToken().then((loggedIn) {
@@ -61,6 +100,11 @@ class _UserItemListViewState extends State<UserItemListView> {
         );
       }
     });
+  }
+
+  void _deleteUser(int userId) async {
+    _logout(showConfirmationDialog: true, userId: userId);
+    setState(() {});
   }
 
   @override
@@ -119,7 +163,9 @@ class _UserItemListViewState extends State<UserItemListView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const UserItemDetailsView(),
+                          builder: (context) => UserItemDetailsView(
+                            id: item.id!,
+                          ),
                         ),
                       );
                     },
@@ -162,18 +208,31 @@ class _UserItemListViewState extends State<UserItemListView> {
                                   ],
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.white30,
-                                ),
-                              ),
-                              if (!isMyUser)
+                              if (isMyUser)
                                 IconButton(
                                   onPressed: () async {
-                                    await store.deleteUser(item.id!);
-                                    setState(() {});
+                                    bool willRefresh = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UserForm(
+                                          id: item.id,
+                                        ),
+                                      ),
+                                    );
+
+                                    if (willRefresh) {
+                                      store.getUsers();
+                                    }
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white30,
+                                  ),
+                                ),
+                              if (isMyUser)
+                                IconButton(
+                                  onPressed: () {
+                                    _deleteUser(item.id!);
                                   },
                                   icon: const Icon(
                                     Icons.delete,

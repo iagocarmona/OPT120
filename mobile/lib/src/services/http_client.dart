@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 abstract class IHttpClient {
@@ -25,15 +27,23 @@ class HttpClient implements IHttpClient {
   Future post({required String url, required dynamic body}) async {
     return await client.post(
       Uri.parse(url),
-      body: body,
+      body: jsonEncode(body),
+      headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json'
+      },
     );
   }
 
   @override
   Future put({required String url, required dynamic body}) async {
-    return await client.post(
+    return await client.put(
       Uri.parse(url),
-      body: body,
+      body: jsonEncode(body),
+      headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json'
+      },
     );
   }
 

@@ -95,4 +95,21 @@ class UserStore {
 
     isLoading.value = false;
   }
+
+  Future<UserModel?> getUserById(int id) async {
+    isLoading.value = true;
+
+    try {
+      return await controller.getUserById(id);
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+
+    return null;
+  }
 }

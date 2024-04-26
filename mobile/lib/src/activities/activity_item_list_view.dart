@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mobile/src/activities/activity_details_view.dart';
 import 'package:mobile/src/activities/activity_form.dart';
 import 'package:mobile/src/controllers/activity_controller.dart';
 import 'package:mobile/src/login.dart';
-import 'package:mobile/src/models/activity_model.dart';
 import 'package:mobile/src/models/user_model.dart';
 import 'package:mobile/src/services/http_client.dart';
 import 'package:mobile/src/stores/activity_stores.dart';
@@ -165,7 +163,20 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  bool willRefresh = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ActivityForm(
+                                        id: item.id,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (willRefresh) {
+                                    store.getActivities();
+                                  }
+                                },
                                 icon: const Icon(
                                   Icons.edit,
                                   color: Colors.white30,
@@ -209,7 +220,7 @@ class _ActivityItemListViewState extends State<ActivityItemListView> {
             store.getActivities();
           }
         },
-        backgroundColor: Colors.deepOrange.shade800,
+        backgroundColor: Colors.deepOrange.shade500,
         child: const Icon(
           Icons.assignment_add,
           color: Colors.white70,

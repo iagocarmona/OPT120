@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile/src/controllers/activity_controller.dart';
 import 'package:mobile/src/models/activity_model.dart';
 import 'package:mobile/src/services/http_client.dart';
@@ -52,7 +51,7 @@ class _ActivityItemDetailsViewState extends State<ActivityItemDetailsView> {
                 icon: Icons.title,
                 text: item?.title ?? 'Título não disponível',
                 fontSize: 24,
-                color: Colors.blue,
+                color: Colors.deepOrange.shade400,
               ),
               const SizedBox(height: 16),
               const Divider(
@@ -63,7 +62,7 @@ class _ActivityItemDetailsViewState extends State<ActivityItemDetailsView> {
                 icon: Icons.description,
                 text: item?.description ?? 'Descrição não disponível',
                 fontSize: 20,
-                color: Colors.green, // Cor verde para a descrição
+                color: Colors.deepOrange.shade400,
               ),
               const SizedBox(height: 16),
               const Divider(color: Colors.grey),
@@ -71,7 +70,7 @@ class _ActivityItemDetailsViewState extends State<ActivityItemDetailsView> {
                 icon: Icons.date_range,
                 text: item?.date ?? 'Data não disponível',
                 fontSize: 20,
-                color: Colors.orange, // Cor laranja para a data
+                color: Colors.deepOrange.shade400,
               ),
             ],
           ),

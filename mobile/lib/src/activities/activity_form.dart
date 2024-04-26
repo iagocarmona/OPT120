@@ -7,7 +7,9 @@ import 'package:mobile/src/stores/activity_stores.dart';
 import 'package:mobile/src/widgets/text_field.dart';
 
 class ActivityForm extends StatefulWidget {
-  const ActivityForm({super.key});
+  final int? id;
+
+  const ActivityForm({super.key, this.id});
 
   @override
   State<ActivityForm> createState() => _ActivityFormState();
@@ -32,6 +34,10 @@ class _ActivityFormState extends State<ActivityForm> {
     dateController = TextEditingController();
     selectedDate = DateTime.now();
 
+    if (widget.id != null) {
+      _loadActivity();
+    }
+
     super.initState();
   }
 
@@ -42,6 +48,15 @@ class _ActivityFormState extends State<ActivityForm> {
     titleController.dispose();
 
     super.dispose();
+  }
+
+  Future<void> _loadActivity() async {
+    final activity = await store.getActivityById(widget.id!);
+    setState(() {
+      titleController.text = activity?.title ?? "";
+      descriptionController.text = activity?.description ?? "";
+      dateController.text = activity?.date ?? "";
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -86,9 +101,9 @@ class _ActivityFormState extends State<ActivityForm> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Criar nova atividade",
-                  style: TextStyle(
+                Text(
+                  widget.id != null ? 'Editar atividade' : 'Criar atividade',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 35,
                     fontWeight: FontWeight.bold,
@@ -149,13 +164,24 @@ class _ActivityFormState extends State<ActivityForm> {
                       return;
                     }
 
-                    final newActivity = ActivityModel(
-                      title: title,
-                      description: description,
-                      date: date,
-                    );
+                    final newActivity = widget.id != null
+                        ? ActivityModel(
+                            id: widget.id,
+                            title: title,
+                            description: description,
+                            date: date,
+                          )
+                        : ActivityModel(
+                            title: title,
+                            description: description,
+                            date: date,
+                          );
 
-                    await store.createActivity(newActivity);
+                    if (widget.id != null) {
+                      await store.updateActivity(newActivity);
+                    } else {
+                      await store.createActivity(newActivity);
+                    }
 
                     if (!store.isLoading.value) {
                       // ignore: use_build_context_synchronously
@@ -167,9 +193,9 @@ class _ActivityFormState extends State<ActivityForm> {
                     backgroundColor:
                         MaterialStatePropertyAll<Color>(Colors.deepOrange),
                   ),
-                  child: const Text(
-                    "Criar",
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    widget.id != null ? 'Editar' : 'Criar',
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 30),

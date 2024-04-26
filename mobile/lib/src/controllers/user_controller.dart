@@ -9,6 +9,7 @@ abstract class IUserController {
   Future<String> login(UserModel user);
   Future<void> updateUser(UserModel user);
   Future<void> deleteUser(int id);
+  Future<UserModel?> getUserById(int id);
 }
 
 class UserController implements IUserController {
@@ -69,7 +70,7 @@ class UserController implements IUserController {
   Future<void> updateUser(UserModel user) async {
     final Map<String, dynamic> data = user.toJson();
 
-    final response = await client.put(url: baseUrl, body: jsonEncode(data));
+    final response = await client.put(url: baseUrl, body: data);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update user');
@@ -83,5 +84,26 @@ class UserController implements IUserController {
     if (response.statusCode != 200) {
       throw Exception('Failed to delete user');
     }
+  }
+
+  @override
+  Future<UserModel?> getUserById(int id) async {
+    final response = await client.get(url: baseUrl, id: id);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+
+      if (body.containsKey('data')) {
+        final item = body['data'];
+
+        final UserModel user = UserModel.fromJson(item);
+
+        return user;
+      }
+    } else {
+      return null;
+    }
+
+    return null;
   }
 }

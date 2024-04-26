@@ -1,11 +1,11 @@
 class UserItem {
-  const UserItem(
+  const UserItem({
     this.id,
-    this.name,
-    this.email,
-  );
+    required this.name,
+    required this.email,
+  });
 
-  final int id;
+  final int? id;
   final String name;
   final String email;
 }

@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 16,
-        selectedItemColor: Colors.deepOrange.shade800,
+        selectedItemColor: Colors.deepOrange.shade500,
         unselectedItemColor: Colors.white54,
         unselectedFontSize: 12,
         items: const [
