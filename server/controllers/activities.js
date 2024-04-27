@@ -17,7 +17,7 @@ async function listMyActivities(req, res, next) {
 
   try {
     res.status(200).send({
-      message: "Successfully listed activities",
+      message: "Successfully listed my activities",
       data: await service.listMyActivities(userId),
     });
   } catch (err) {
@@ -69,7 +69,7 @@ async function remove(req, res, next) {
   if (!id) return res.status(400).send({ message: "Invalid id" });
 
   try {
-    await service.deleteById(id);
+    await service.deleteById(id, req.user.id);
 
     res.status(200).send({ message: `Successfully deleted id: ${id}` });
   } catch (err) {

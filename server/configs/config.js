@@ -6,6 +6,7 @@ const config = {
     database: "server",
     port: 3307,
     connectTimeout: 60000,
+    maxConnections: 1000,
   },
 };
 

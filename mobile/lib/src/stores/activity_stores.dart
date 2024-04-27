@@ -16,6 +16,7 @@ class ActivityStore {
 
   Future<void> getActivities() async {
     isLoading.value = true;
+    error.value = "";
 
     try {
       final result = await controller.getActivities();
@@ -29,8 +30,25 @@ class ActivityStore {
     isLoading.value = false;
   }
 
+  Future<void> getMyActivities() async {
+    isLoading.value = true;
+    error.value = "";
+
+    try {
+      final result = await controller.getMyActivities();
+      state.value = result;
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+    }
+
+    isLoading.value = false;
+  }
+
   Future<void> createActivity(ActivityModel activity) async {
     isLoading.value = true;
+    error.value = "";
 
     try {
       await controller.createActivity(activity);
@@ -45,8 +63,60 @@ class ActivityStore {
     isLoading.value = false;
   }
 
+  Future<void> linkActivity(int activityId, int userId) async {
+    isLoading.value = true;
+    error.value = "";
+
+    try {
+      await controller.linkActivity(activityId, userId);
+      await getMyActivities();
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> unlinkActivity(int activityId, int userId) async {
+    isLoading.value = true;
+    error.value = "";
+
+    try {
+      await controller.unlinkActivity(activityId, userId);
+      await getMyActivities();
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
+  Future<void> finishActivity(int activityId, int userId) async {
+    isLoading.value = true;
+    error.value = "";
+
+    try {
+      await controller.finishActivity(activityId, userId);
+      await getMyActivities();
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: $e');
+      }
+      error.value = e.toString();
+    }
+
+    isLoading.value = false;
+  }
+
   Future<void> updateActivity(ActivityModel activity) async {
     isLoading.value = true;
+    error.value = "";
 
     try {
       await controller.updateActivity(activity);
@@ -63,6 +133,7 @@ class ActivityStore {
 
   Future<void> deleteActivity(int id) async {
     isLoading.value = true;
+    error.value = "";
 
     try {
       await controller.deleteActivity(id);
@@ -79,6 +150,7 @@ class ActivityStore {
 
   Future<ActivityModel?> getActivityById(int id) async {
     isLoading.value = true;
+    error.value = "";
 
     try {
       return await controller.getActivityById(id);

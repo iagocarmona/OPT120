@@ -1,34 +1,33 @@
 const db = require("../configs/db");
 
 async function linkActivity(activityId, userId) {
-  const result = await db.query(
+  const exists = await getOneById(activityId, userId);
+
+  if (!exists.error)
+    return {
+      error: {
+        message: "Atividade já vinculada",
+        statusCode: 400,
+      },
+    };
+
+  await db.query(
     `INSERT INTO usuario_atividade (atividade_id, usuario_id) VALUES (?, ?)`,
     [activityId, userId]
   );
 
-  const insertedId = result.insertId;
-  const created = await db.query(
-    `SELECT * FROM usuario_atividade WHERE id = ?`,
-    [insertedId]
-  );
-
-  return created[0];
+  return await getOneById(activityId, userId);
 }
 
 async function assignGrade(activityId, userId, grade) {
+  await getOneById(activityId, userId);
+
   await db.query(
     `UPDATE usuario_atividade SET nota = ? WHERE atividade_id = ? AND usuario_id = ?`,
     [grade, activityId, userId]
   );
 
-  const updatedActivity = await db.query(
-    `SELECT * FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
-    [activityId, userId]
-  );
-
-  if (updatedActivity.length > 0) {
-    return updatedActivity[0];
-  }
+  return await getOneById(activityId, userId);
 }
 
 async function getOneById(activityId, userId) {
@@ -37,14 +36,19 @@ async function getOneById(activityId, userId) {
     [activityId, userId]
   );
 
-  if (!result[0]) throw new Error("Activity not found");
+  if (!result[0])
+    return {
+      error: {
+        message: "Atividade não encontrada",
+        statusCode: 404,
+      },
+    };
 
   return result[0];
 }
 
 async function unlinkActivity(activityId, userId) {
-  const exists = await getOneById(activityId, userId);
-  if (!exists) throw new Error("Activity not found");
+  await getOneById(activityId, userId);
 
   return await db.query(
     `DELETE FROM usuario_atividade WHERE atividade_id = ? AND usuario_id = ?`,
@@ -52,18 +56,38 @@ async function unlinkActivity(activityId, userId) {
   );
 }
 
-async function getActivitiesByUserId(userId) {
-  const rows = await db.query(
-    `SELECT usuario_id FROM usuario_atividade WHERE usuario_id = ?`,
-    [userId]
+async function finishActivity(activityId, userId) {
+  const exists = await getOneById(activityId, userId);
+
+  if (exists.entrega) {
+    return {
+      error: {
+        message: "Atividade já finalizada",
+        statusCode: 400,
+      },
+    };
+  }
+
+  await db.query(
+    `UPDATE usuario_atividade SET entrega = ? WHERE atividade_id = ? AND usuario_id = ?`,
+    [new Date(), activityId, userId]
   );
 
-  return helper.emptyOrRows(rows);
+  return await getOneById(activityId, userId);
+}
+
+async function removeAllRelationsByActivity(activityId) {
+  return await db.query(
+    `DELETE FROM usuario_atividade WHERE atividade_id = ?`,
+    [activityId]
+  );
 }
 
 module.exports = {
   unlinkActivity,
   linkActivity,
-  getActivitiesByUserId,
   assignGrade,
+  finishActivity,
+  getOneById,
+  removeAllRelationsByActivity,
 };

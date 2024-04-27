@@ -166,7 +166,10 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               child: store.isLoading.value
                   ? const CircularProgressIndicator()
-                  : const Text("Cadastrar"),
+                  : const Text(
+                      "Cadastrar",
+                      style: TextStyle(color: Colors.white60),
+                    ),
             ),
             const SizedBox(height: 30),
             GestureDetector(
@@ -178,12 +181,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 );
               },
-              child: Text(
-                "Já é cadastrado? Fazer login.",
-                style: TextStyle(
+              child: const Text("Já é cadastrado? Fazer login.",
+                  style: TextStyle(
                     fontWeight: FontWeight.w100,
-                    color: Colors.white.withOpacity(0.8)),
-              ),
+                    color: Colors.white54,
+                  )),
             )
           ],
         ),

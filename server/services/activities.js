@@ -1,6 +1,7 @@
 const moment = require("moment");
 const db = require("../configs/db");
 const helper = require("../helper");
+const userActivityService = require("../services/user-activity");
 
 async function create(title, description, date) {
   const result = await db.query(
@@ -58,9 +59,9 @@ async function update(id, title, description, date) {
   }
 }
 
-async function deleteById(id) {
-  const exists = await getOneById(id);
-  if (!exists) throw new Error("Activity not found");
+async function deleteById(id, userId) {
+  await getOneById(id);
+  await userActivityService.removeAllRelationsByActivity(id);
 
   return await db.query(`DELETE FROM atividades WHERE id = ?`, [id]);
 }
@@ -68,7 +69,13 @@ async function deleteById(id) {
 async function getOneById(id) {
   const result = await db.query(`SELECT * FROM atividades WHERE id = ?`, [id]);
 
-  if (!result[0]) throw new Error("Activity not found");
+  if (!result[0])
+    return {
+      error: {
+        message: "Atividade não encontrada",
+        statusCode: 400,
+      },
+    };
 
   return result[0];
 }
@@ -80,7 +87,7 @@ async function list() {
 
 async function listMyActivities(userId) {
   const rows = await db.query(
-    `SELECT * FROM atividades a INNER JOIN usuario_atividade ua ON a.id = ua.atividade_id AND ua.usuario_id = ? ORDER BY id DESC`,
+    `SELECT a.* FROM atividades a INNER JOIN usuario_atividade ua ON a.id = ua.atividade_id AND ua.usuario_id = ? ORDER BY id DESC`,
     [userId]
   );
 

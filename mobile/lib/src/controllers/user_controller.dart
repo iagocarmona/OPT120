@@ -44,7 +44,8 @@ class UserController implements IUserController {
     final response = await client.post(url: baseUrl, body: data);
 
     if (response.statusCode != 201) {
-      throw Exception('Failed to create user');
+      final responseData = jsonDecode(response.body);
+      throw responseData['error']['message'];
     }
   }
 
@@ -74,7 +75,8 @@ class UserController implements IUserController {
     final response = await client.put(url: baseUrl, body: data);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to update user');
+      final responseData = jsonDecode(response.body);
+      throw responseData['error']['message'];
     }
   }
 
@@ -83,7 +85,8 @@ class UserController implements IUserController {
     final response = await client.delete(url: baseUrl, id: id);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete user');
+      final responseData = jsonDecode(response.body);
+      throw responseData['error']['message'];
     }
   }
 

@@ -110,39 +110,6 @@ class _UserItemListViewState extends State<UserItemListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: RichText(
-          text: TextSpan(
-            children: [
-              const TextSpan(
-                text: 'Olá ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white54,
-                  fontSize: 22,
-                ),
-              ),
-              TextSpan(
-                text: loggedUserModel?.name ?? "Atividades",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70,
-                  fontSize: 22,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(
-              Icons.logout,
-              color: Colors.deepOrange,
-            ),
-          )
-        ],
-      ),
       body: AnimatedBuilder(
         animation:
             Listenable.merge([store.isLoading, store.error, store.state]),

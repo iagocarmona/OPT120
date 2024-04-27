@@ -9,12 +9,13 @@ router.post(
   controller.linkActivity
 );
 
-router.delete(
+router.post(
   "/desvincular-atividade",
   middleware.validateAuth,
   controller.unlinkActivity
 );
 
 router.put("/atribuir-nota", middleware.validateAuth, controller.assignGrade);
+router.put("/entregar", middleware.validateAuth, controller.finishActivity);
 
 module.exports = router;

@@ -40,6 +40,45 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _handleLogin() async {
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, insira um e-mail e uma senha.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
+
+    final login = UserModel(email: email, password: password);
+
+    await store.login(login);
+
+    if (store.error.value.isEmpty) {
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Home(),
+        ),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(store.error.value),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,44 +134,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 60),
             ElevatedButton(
-              onPressed: () async {
-                final email = emailController.text;
-                final password = passwordController.text;
-
-                if (email.isEmpty || password.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, insira um e-mail e uma senha.'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-
-                  return;
-                }
-
-                final login = UserModel(email: email, password: password);
-
-                await store.login(login);
-
-                if (store.error.value.isEmpty) {
-                  Navigator.pushReplacement(
-                    // ignore: use_build_context_synchronously
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Home(),
-                    ),
-                  );
-                } else {
-                  // ignore: use_build_context_synchronously
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(store.error.value),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
-              },
+              onPressed: _handleLogin,
               style: const ButtonStyle(
                 fixedSize: MaterialStatePropertyAll(Size(200, 50)),
               ),
@@ -145,6 +147,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 30),
             GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTap: () {
                 Navigator.pushReplacement(
                   context,

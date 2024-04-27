@@ -17,6 +17,7 @@ class UserStore {
 
   Future<void> getUsers() async {
     isLoading.value = true;
+    error.value = '';
 
     try {
       final result = await controller.getUsers();
@@ -32,6 +33,7 @@ class UserStore {
 
   Future<void> createUser(UserModel user) async {
     isLoading.value = true;
+    error.value = '';
 
     try {
       await controller.createUser(user);
@@ -47,6 +49,7 @@ class UserStore {
 
   Future<void> login(UserModel user) async {
     isLoading.value = true;
+    error.value = '';
 
     try {
       final token = await controller.login(user);
@@ -63,6 +66,7 @@ class UserStore {
 
   Future<void> updateUser(UserModel user) async {
     isLoading.value = true;
+    error.value = '';
 
     try {
       await controller.updateUser(user);
@@ -79,6 +83,8 @@ class UserStore {
 
   Future<void> deleteUser(int id) async {
     isLoading.value = true;
+    error.value = '';
+
     try {
       await controller.deleteUser(id);
       await getUsers();
@@ -94,6 +100,7 @@ class UserStore {
 
   Future<UserModel?> getUserById(int id) async {
     isLoading.value = true;
+    error.value = '';
 
     try {
       return await controller.getUserById(id);

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:localstorage/localstorage.dart';
 
 abstract class IHttpClient {
   Future get({required String url, int? id});
@@ -11,6 +12,7 @@ abstract class IHttpClient {
 
 class HttpClient implements IHttpClient {
   final client = http.Client();
+  final token = localStorage.getItem('token');
 
   @override
   Future get({required String url, int? id}) async {
@@ -20,7 +22,12 @@ class HttpClient implements IHttpClient {
       newUrl = '$url/$id';
     }
 
-    return await client.get(Uri.parse(newUrl));
+    return await client.get(
+      Uri.parse(newUrl),
+      headers: {
+        'x-auth-token': token ?? "",
+      },
+    );
   }
 
   @override
@@ -30,7 +37,8 @@ class HttpClient implements IHttpClient {
       body: jsonEncode(body),
       headers: {
         "Accept": "application/json",
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-auth-token': token ?? ""
       },
     );
   }
@@ -42,7 +50,8 @@ class HttpClient implements IHttpClient {
       body: jsonEncode(body),
       headers: {
         "Accept": "application/json",
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-auth-token': token ?? ""
       },
     );
   }
@@ -50,6 +59,11 @@ class HttpClient implements IHttpClient {
   @override
   Future delete({required String url, required int id}) async {
     final newUrl = '$url/$id';
-    return await client.delete(Uri.parse(newUrl));
+    return await client.delete(
+      Uri.parse(newUrl),
+      headers: {
+        'x-auth-token': token ?? "",
+      },
+    );
   }
 }
