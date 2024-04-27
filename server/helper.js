@@ -17,11 +17,7 @@ async function encryptPassword(password) {
 }
 
 async function comparePasswords(password, hashedPassword) {
-  try {
-    return await bcrypt.compare(password, hashedPassword);
-  } catch (error) {
-    throw new Error("Erro ao comparar as senhas: " + error.message);
-  }
+  return await bcrypt.compare(password, hashedPassword);
 }
 
 module.exports = {
