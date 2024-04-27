@@ -9,4 +9,10 @@ router.put("/", middleware.validateAuth, controller.update);
 router.delete("/:id", middleware.validateAuth, controller.remove);
 router.get("/:id", middleware.validateAuth, controller.getOne);
 
+router.get(
+  "/minhas-atividades",
+  middleware.validateAuth,
+  controller.listMyActivities
+);
+
 module.exports = router;

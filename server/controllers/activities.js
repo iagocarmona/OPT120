@@ -12,6 +12,20 @@ async function list(req, res, next) {
   }
 }
 
+async function listMyActivities(req, res, next) {
+  const userId = req.user.id;
+
+  try {
+    res.status(200).send({
+      message: "Successfully listed activities",
+      data: await service.listMyActivities(userId),
+    });
+  } catch (err) {
+    console.error(`Error while getting activities `, err.message);
+    next(err);
+  }
+}
+
 async function create(req, res, next) {
   const { titulo: title, descricao: description, data: date } = req.body;
 
@@ -83,6 +97,7 @@ async function getOne(req, res, next) {
 
 module.exports = {
   list,
+  listMyActivities,
   create,
   update,
   remove,

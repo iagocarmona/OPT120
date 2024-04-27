@@ -78,10 +78,20 @@ async function list() {
   return helper.emptyOrRows(rows);
 }
 
+async function listMyActivities(userId) {
+  const rows = await db.query(
+    `SELECT * FROM atividades a INNER JOIN usuario_atividade ua ON a.id = ua.atividade_id AND ua.usuario_id = ? ORDER BY id DESC`,
+    [userId]
+  );
+
+  return helper.emptyOrRows(rows);
+}
+
 module.exports = {
   list,
   create,
   update,
   deleteById,
   getOneById,
+  listMyActivities,
 };
